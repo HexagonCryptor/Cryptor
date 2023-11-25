@@ -1,0 +1,21 @@
+[package]
+name = "FileCryptor"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata.vcpkg]
+git = "https://github.com/microsoft/vcpkg"
+rev = "a42af01"
+triplet = "x64-windows-static"
+dependencies = ["liblzma", "liblzma:x64-windows-static", "liblzma:x64-windows-static.md"]
+
+[dependencies]
+rust-crypto = "^0.2"
+rand = "0.8.5"
+inquire = "0.6.2"
+console = "0.15.7"
+serde_json = { version = "1.0.107", features = [] }
+serde = { version = "1.0.188", features = ["derive"] }
+miniz_oxide = "0.7.1"
