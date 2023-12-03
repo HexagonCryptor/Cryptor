@@ -3,7 +3,6 @@ mod structurs;
 extern crate crypto;
 extern crate rand;
 
-use std::ffi::OsStr;
 use std::fs::{File};
 use std::io::{Read, Write};
 use std::path::Path;
@@ -202,8 +201,14 @@ fn main() {
 //
                                                                         match file_struct {
                                                                             Ok(mut FileStruct) => {
-                                                                                println!("{}", extension.file_stem().unwrap().to_str().unwrap());
-                                                                                let mut f = File::create(format!("{}.{}",  extension.file_stem().unwrap().to_str().unwrap(), FileStruct.format));
+                                                                                let mut filename = String::new();
+                                                                                if FileStruct.format == "" {
+                                                                                    filename = extension.file_stem().unwrap().to_str().unwrap().parse().unwrap();
+                                                                                }
+                                                                                else {
+                                                                                    filename = format!("{}.{}",  extension.file_stem().unwrap().to_str().unwrap(), FileStruct.format);
+                                                                                }
+                                                                                let mut f = File::create(filename);
                                                                                 match f {
                                                                                     Ok(mut file) => {
                                                                                         let decompressed = decompress_to_vec(FileStruct.file.as_slice()).expect("Failed to decompress!");
