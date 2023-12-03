@@ -3,6 +3,7 @@ mod structurs;
 extern crate crypto;
 extern crate rand;
 
+use std::ffi::OsStr;
 use std::fs::{File};
 use std::io::{Read, Write};
 use std::path::Path;
@@ -100,14 +101,29 @@ fn main() {
                 .with_error_message("Please type a valid key")
                 .with_placeholder("key")
                 .with_validator(|val: &String| {
-                    if val.len() != 32 {
-                        Ok(Validation::Invalid(
-                            "Invalid key".into(),
-                        ))
+                    let lenght = val.len();
+                    if lenght != 32 {
+                        if lenght < 32 {
+                            let add = (32 - lenght).to_string();
+                            Ok(Validation::Invalid(
+                                format!("{} add: {} symbols", "Invalid Key", add).into(),
+                            ))
+                        }
+                        else if lenght > 32 {
+                            let remove = (lenght - 32).to_string();
+                            Ok(Validation::Invalid(
+                                format!("{} remove: {} symbols", "Invalid Key", remove).into(),
+                            ))
+                        }
+                        else {
+                            Ok(Validation::Invalid(
+                                "Invalid Key".into(),
+                            ))
+                        }
                     } else {
                         if val.as_bytes().len() != 32 {
                             Ok(Validation::Invalid(
-                                "Invalid key".into(),
+                                "Invalid Key".into(),
                             ))
                         }
                         else {
@@ -121,10 +137,25 @@ fn main() {
                 .with_help_message("IV for file")
                 .with_error_message("Please type a valid IV")
                 .with_validator(|val: &String| {
-                    if val.len() != 16 {
-                        Ok(Validation::Invalid(
-                            "Invalid IV".into(),
-                        ))
+                    let lenght = val.len();
+                    if lenght != 16 {
+                        if lenght < 16 {
+                            let add = (16 - lenght).to_string();
+                            Ok(Validation::Invalid(
+                                format!("{} add: {} symbols", "Invalid IV", add).into(),
+                            ))
+                        }
+                        else if lenght > 16 {
+                            let remove = (lenght - 16).to_string();
+                            Ok(Validation::Invalid(
+                                format!("{} remove: {} symbols", "Invalid IV", remove).into(),
+                            ))
+                        }
+                        else {
+                            Ok(Validation::Invalid(
+                                "Invalid IV".into(),
+                            ))
+                        }
                     } else {
                         if val.as_bytes().len() != 16 {
                             Ok(Validation::Invalid(
@@ -192,8 +223,16 @@ fn main() {
                                                     }
                                                     else if choice == "Encrypt" {
                                                         let compressed = compress_to_vec(buffer.as_slice(), 6);
+                                                        let ext = extension.extension();
+                                                        let mut format: String = String::from("");
+                                                        match ext {
+                                                            None => {}
+                                                            Some(ext) => {
+                                                                format = ext.to_string_lossy().to_string();
+                                                            }
+                                                        }
                                                         let filest = FileStruct {
-                                                            format: extension.extension().unwrap().to_str().unwrap().to_string(),
+                                                            format: format.parse().unwrap(),
                                                             file: compressed,
                                                         };
                                                         let json = serde_json::to_string(&filest);
